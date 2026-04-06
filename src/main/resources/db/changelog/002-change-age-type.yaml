@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-change-age-type
+      author: optimistic_lock
+      changes:
+        - modifyDataType:
+            tableName: users
+            columnName: age
+            newDataType: INT

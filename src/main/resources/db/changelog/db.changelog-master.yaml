@@ -1,0 +1,6 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/001-create-file-entity.yaml
+
+  - include:
+      file: db/changelog/002-change-age-type.yaml
