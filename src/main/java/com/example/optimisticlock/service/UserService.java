@@ -7,12 +7,18 @@ import com.example.optimisticlock.exception.UserNotFoundException;
 import com.example.optimisticlock.mapper.UserMapper;
 import com.example.optimisticlock.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@EnableRetry
 @RequiredArgsConstructor
 public class UserService {
 
@@ -43,32 +49,42 @@ public class UserService {
         return userMapper.toDto(userRepository.save(user));
     }
 
+    @Retryable(
+            retryFor =  ObjectOptimisticLockingFailureException.class,
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000)
+    )
+
     @Transactional
     public UserDTO update(Long id, UserDTO userDTO) {
         User user = findEntityById(id);
-
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
         userMapper.updateFromDto(user, userDTO);
+        userRepository.flush();
         return userMapper.toDto(user);
     }
+
+    @Recover
+    public UserDTO recover(ObjectOptimisticLockingFailureException exception) {
+        throw new RuntimeException();
+    }
+
+    @Retryable(
+            retryFor = ObjectOptimisticLockingFailureException.class,
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000)
+    )
 
     @Transactional
     public UserDTO updatePartial(Long id, UserPatchDTO userPatchDTO) {
         User user = findEntityById(id);
-
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
         userMapper.updatePartial(user, userPatchDTO);
+        userRepository.flush();
         return userMapper.toDto(user);
+    }
+
+    @Recover
+    public UserDTO recover(ObjectOptimisticLockingFailureException ex, Long id, UserPatchDTO userPatchDTO) {
+        throw new RuntimeException();
     }
 
     @Transactional
