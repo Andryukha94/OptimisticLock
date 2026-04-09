@@ -2,15 +2,19 @@ package com.example.optimisticlock.controller;
 
 import com.example.optimisticlock.dto.UserDTO;
 import com.example.optimisticlock.dto.UserPatchDTO;
+import com.example.optimisticlock.dto.UserSearchDTO;
 import com.example.optimisticlock.service.UserService;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -24,6 +28,11 @@ public class UserController {
     @GetMapping("/{id}")
     public UserDTO getOne(@PathVariable Long id) {
         return userService.getOne(id);
+    }
+
+    @GetMapping("/search")
+    public List<UserDTO> search(UserSearchDTO userSearch) {
+        return userService.search(userSearch);
     }
 
     @PostMapping

@@ -2,6 +2,7 @@ package com.example.optimisticlock.service;
 
 import com.example.optimisticlock.dto.UserDTO;
 import com.example.optimisticlock.dto.UserPatchDTO;
+import com.example.optimisticlock.dto.UserSearchDTO;
 import com.example.optimisticlock.entity.User;
 import com.example.optimisticlock.exception.UserNotFoundException;
 import com.example.optimisticlock.mapper.UserMapper;
@@ -91,5 +92,14 @@ public class UserService {
     public void delete (Long id) {
         User user = findEntityById(id);
         userRepository.delete(user);
+    }
+
+    @Transactional
+    public List<UserDTO> search(UserSearchDTO userSearch) {
+        return userRepository.search(userSearch)
+                .stream()
+                .map(userMapper::toDto)
+                .toList();
+
     }
 }
