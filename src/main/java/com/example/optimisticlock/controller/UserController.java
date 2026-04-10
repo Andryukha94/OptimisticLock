@@ -9,6 +9,9 @@ import jakarta.persistence.criteria.Root;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +24,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<UserDTO> findAll() {
+    public List<UserDTO> findAll(@PageableDefault (size = 10) Pageable pageable) {
         return userService.findAll();
     }
 
@@ -31,8 +34,8 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public List<UserDTO> search(UserSearchDTO userSearch) {
-        return userService.search(userSearch);
+    public Page<UserDTO> search(@Valid UserSearchDTO userSearch, @PageableDefault(size = 10) Pageable pageable) {
+        return userService.search(userSearch, pageable);
     }
 
     @PostMapping
@@ -47,8 +50,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDTO updatePatch(@PathVariable Long id,
-                               @RequestBody @Valid UserPatchDTO userPatchDTO) {
+    public UserDTO updatePatch(@PathVariable Long id, @RequestBody @Valid UserPatchDTO userPatchDTO) {
         return userService.updatePartial(id, userPatchDTO);
     }
 

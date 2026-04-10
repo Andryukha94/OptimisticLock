@@ -1,5 +1,6 @@
 package com.example.optimisticlock.dto;
 
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +15,7 @@ public class UserSearchDTO {
     private String lastName;
     private String phone;
     private String email;
+
+    @Min(1)
     private Integer age;
 }

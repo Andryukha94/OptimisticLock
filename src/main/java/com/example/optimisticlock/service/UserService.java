@@ -7,7 +7,10 @@ import com.example.optimisticlock.entity.User;
 import com.example.optimisticlock.exception.UserNotFoundException;
 import com.example.optimisticlock.mapper.UserMapper;
 import com.example.optimisticlock.repository.UserRepository;
+import com.example.optimisticlock.specifications.UserSpecifications;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.EnableRetry;
@@ -94,12 +97,10 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    @Transactional
-    public List<UserDTO> search(UserSearchDTO userSearch) {
-        return userRepository.search(userSearch)
-                .stream()
-                .map(userMapper::toDto)
-                .toList();
-
+    @Transactional(readOnly = true)
+    public Page<UserDTO> search(UserSearchDTO filter, Pageable pageable) {
+        return userRepository
+                .findAll(UserSpecifications.byFilter(filter), pageable)
+                .map(userMapper::toDto);
     }
 }

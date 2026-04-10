@@ -2,7 +2,7 @@ package com.example.optimisticlock.repository;
 
 import com.example.optimisticlock.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface UserRepository
-        extends JpaRepository<User,Long>, UserSearchRepository {
+public interface UserRepository extends JpaRepository<User,Long>, JpaSpecificationExecutor<User> {
 }
