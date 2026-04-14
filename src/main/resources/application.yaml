@@ -1,3 +1,6 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: optimistic_lock
@@ -20,3 +23,18 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  file:
+    name: logs/app.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger - %msg%n"
